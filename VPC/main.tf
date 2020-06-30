@@ -7,11 +7,26 @@ resource "aws_vpc" "vpc1" {
   }
 }
 
-resource "aws_subnet" "subnet1" {
-  cidr_block = var.public_subnet_cidr
-  vpc_id     = "${aws_vpc.vpc1.id}"
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+resource "aws_subnet" "subnetA" {
+  cidr_block        = var.public_subnet_cidrA
+  vpc_id            = "${aws_vpc.vpc1.id}"
+  availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name = "public_subnet1"
+    Name = "public_subnetA"
+  }
+}
+
+resource "aws_subnet" "subnetB" {
+  cidr_block        = var.public_subnet_cidrB
+  vpc_id            = "${aws_vpc.vpc1.id}"
+  availability_zone = data.aws_availability_zones.available.names[1]
+
+  tags = {
+    Name = "public_subnetB"
   }
 }

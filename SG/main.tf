@@ -3,27 +3,22 @@ resource "aws_security_group" "SG" {
   vpc_id = var.vpc_id
 
   ingress {
-    description = "SSH from VPC"
-    from_port   = "22"
-    to_port     = "22"
+    description = "Allow SSH from own IP"
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.ownIP
   }
 
-  ingress {
-    description = "HTTP from VPC"
-    from_port   = "80"
-    to_port     = "80"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTPS from VPC"
-    from_port   = "443"
-    to_port     = "443"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    iterator = port
+    for_each = var.ingress_ports
+    content {
+      from_port   = port.value
+      to_port     = port.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
   egress {
@@ -32,7 +27,5 @@ resource "aws_security_group" "SG" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-
 
 }
